@@ -1,6 +1,6 @@
 # gowatts
 
-to run:
+to run clone repo and go into directory then:
 
 - make build
 - docker build -t gowatts . 
