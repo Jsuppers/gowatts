@@ -1,0 +1,60 @@
+{{define "map"}}
+    <div id="map" class="map"></div>
+    <script>
+        
+        var lat;
+        var lon;
+
+        var map = new ol.Map({
+            target: 'map',
+            layers: [
+                new ol.layer.Tile({
+      preload: Infinity,source: new ol.source.OSM()})
+            ],
+            view: new ol.View({
+                center: ol.proj.fromLonLat([{{ .Longitude }}, {{ .Latitude }}]),
+                zoom: {{ .Zoom }}
+            })
+        });
+        map.on('click', function (evt) {
+            var coords = ol.proj.toLonLat(evt.coordinate);
+            lat = coords[1];
+            lon = coords[0];
+            window.location.href = "/?zoom="+map.getView().getZoom()+"&latitude=" + lat + "&longitude=" + lon
+        });
+
+        var vectorSource = new ol.source.Vector({
+            features: []
+        });
+
+        {{ if (ne .Longitude "" ) }}
+            var marker = new ol.Feature({
+                geometry: new ol.geom.Point(ol.proj.fromLonLat([{{ .Longitude }}, {{ .Latitude }}]))
+            })
+            marker.setStyle(new ol.style.Style({
+                image: new ol.style.Icon({
+                    src: '/static/marker.png'
+                })
+            }));
+            vectorSource.addFeature(marker)
+        {{ end }}
+
+        {{ if (ne .Station.Longitude 0.0 ) }}
+            var station = new ol.Feature({
+                geometry: new ol.geom.Point(ol.proj.fromLonLat([{{ .Station.Longitude }}, {{ .Station.Latitude }}]))
+            })
+            station.setStyle(new ol.style.Style({
+                image: new ol.style.Icon({
+                    src: '/static/station.png'
+                })
+            }));
+            vectorSource.addFeature(station)
+        {{ end }}
+
+        var vectorLayer = new ol.layer.Vector({
+            source: vectorSource
+        });
+
+        map.addLayer(vectorLayer);
+    </script>
+{{end}}

@@ -1,0 +1,263 @@
+{{define "setup"}}
+  {{ if (ne .Longitude "" ) }}
+    <div id="setup">
+      <script>
+
+        // Define the vertices that compose each of the 6 faces. These numbers are
+        // indices to the vertex list defined above.
+        var faces = [
+          [
+            0, 1, 2, 3
+          ],
+          [
+            1, 5, 6, 2
+          ],
+          [
+            5, 4, 7, 6
+          ],
+          [
+            4, 0, 3, 7
+          ],
+          [
+            0, 4, 5, 1
+          ],
+          [
+            3, 2, 6, 7
+          ]
+        ];
+
+        // Define the colors for each face of the array
+        var colors = [
+          [
+            0, 0, 137
+          ],
+          [
+            136, 135, 135
+          ],
+          [
+            134, 132, 132
+          ],
+          [
+            136, 135, 135
+          ],
+          [
+            134, 132, 132
+          ],
+          [
+            139, 137, 137
+          ]
+        ];
+        var canvas;
+        var ctx;
+        var vertices;
+        var angleX = 270 - {{ .Tilt }};
+        var angleY = {{ .Azimuth }};
+
+        function drawSolarPanel() {
+          canvas = document.getElementById("setup-canvas");
+          ctx = canvas.getContext("2d");
+          var img = document.getElementById("img_background");
+          ctx.drawImage(img, 0, 0);
+
+          vertices = [
+            new Point3D(-1, 1, -0.2), //0
+            new Point3D(1, 1, -0.2), //1
+            new Point3D(1, -1, -0.2), //2
+            new Point3D(-1, -1, -0.2), //3
+            new Point3D(-1, 1, 0.2), //4
+            new Point3D(1, 1, 0.2), //5
+            new Point3D(1, -1, 0.2), //6
+            new Point3D(-1, -1, 0.2) //7
+          ];
+
+          function Point3D(x, y, z) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+
+            this.rotateX = function (angle) {
+              var rad,
+                cosa,
+                sina,
+                y,
+                z
+              rad = angle * Math.PI / 180
+              cosa = Math.cos(rad)
+              sina = Math.sin(rad)
+              y = this.y * cosa - this.z * sina
+              z = this.y * sina + this.z * cosa
+              return new Point3D(this.x, y, z)
+            }
+
+            this.rotateY = function (angle) {
+              var rad,
+                cosa,
+                sina,
+                x,
+                z
+              rad = angle * Math.PI / 180
+              cosa = Math.cos(rad)
+              sina = Math.sin(rad)
+              z = this.z * cosa - this.x * sina
+              x = this.z * sina + this.x * cosa
+              return new Point3D(x, this.y, z)
+            }
+
+            this.rotateZ = function (angle) {
+              var rad,
+                cosa,
+                sina,
+                x,
+                y
+              rad = angle * Math.PI / 180
+              cosa = Math.cos(rad)
+              sina = Math.sin(rad)
+              x = this.x * cosa - this.y * sina
+              y = this.x * sina + this.y * cosa
+              return new Point3D(x, y, this.z)
+            }
+
+            this.project = function (viewWidth, viewHeight, fov, viewDistance) {
+              var factor,
+                x,
+                y
+              factor = fov / (viewDistance + this.z)
+              x = this.x * factor + viewWidth / 2
+              y = this.y * factor + viewHeight / 2
+              return new Point3D(x, y, this.z)
+            }
+          }
+
+          updateSolarPanel()
+
+        }
+
+        function updateTiltInput(val) {
+          document
+            .getElementById('tiltText')
+            .value = val;
+          angleX = 270 - val
+          var img = document.getElementById("img_background");
+          ctx.drawImage(img, 0, 0);
+
+          updateSolarPanel()
+        }
+
+        function updateAzimuthInput(val) {
+          document
+            .getElementById('azimuthText')
+            .value = val;
+          angleY = val
+          var img = document.getElementById("img_background");
+          ctx.drawImage(img, 0, 0);
+
+          updateSolarPanel()
+        }
+
+        function updateSolarPanel() {
+
+          if ((angleX > 0 && angleY > 280) || (angleX > 0 && angleY < 80) || (angleX < 0 && angleY > 104 && angleY < 250)) {
+            document
+              .getElementById('img_pole')
+              .hidden = false;
+          } else {
+            document
+              .getElementById('img_pole')
+              .hidden = true;
+          }
+
+          var t = new Array();
+          for (var i = 0; i < vertices.length; i++) {
+            var v = vertices[i];
+            var r = v
+              .rotateX(angleX)
+              .rotateY(angleY);
+            var p = r.project(400, 250, 200, 4);
+            t.push(p)
+          }
+
+          var avg_z = new Array();
+
+          for (var i = 0; i < faces.length; i++) {
+            var f = faces[i];
+            avg_z[i] = {
+              "index": i,
+              "z": (t[f[0]].z + t[f[1]].z + t[f[2]].z + t[f[3]].z) / 4.0
+            };
+          }
+
+          avg_z.sort(function (a, b) {
+            return b.z - a.z;
+          });
+
+          for (var i = 0; i < faces.length; i++) {
+            var f = faces[avg_z[i].index]
+
+            ctx.fillStyle = arrayToRGB(colors[avg_z[i].index]);
+            ctx.beginPath()
+            ctx.moveTo(t[f[0]].x, t[f[0]].y)
+            ctx.lineTo(t[f[1]].x, t[f[1]].y)
+            ctx.lineTo(t[f[2]].x, t[f[2]].y)
+            ctx.lineTo(t[f[3]].x, t[f[3]].y)
+            ctx.closePath()
+            ctx.fill()
+          }
+
+          /* Constructs a CSS RGB value from an array of 3 elements. */
+          function arrayToRGB(arr) {
+            if (arr.length == 3) {
+              return "rgb(" + arr[0] + "," + arr[1] + "," + arr[2] + ")";
+            }
+            return "rgb(0,0,0)";
+          }
+
+        }
+      </script>
+
+      <div id="left_options">
+        <form action="/" id="setup-form">
+          <input type="hidden" name="longitude" value="{{ .Longitude }}"/>
+          <input type="hidden" name="latitude" value="{{ .Latitude }}"/>
+
+          <label for="tilt">Tilt (0 - 90 degrees):</label><br>
+          <input type="range" name="tilt" value="{{ .Tilt }}" min="0" max="90" onchange="updateTiltInput(this.value);">
+          <input type="text" id="tiltText" value="{{ .Tilt }}" disabled><br>
+
+          <label for="azimuth">Azimuth (0 - 360 degrees):</label><br>
+          <input type="range" name="azimuth" value="{{ .Azimuth }}" min="0" max="360" onchange="updateAzimuthInput(this.value);">
+          <input type="text" id="azimuthText" value="{{ .Azimuth }}" disabled><br>
+
+          <label for="capacity">Capacity (1 - 10000 kW)</label><br>
+          <input type="number" name="capacity" value="{{ .Capacity }}" min="1" max="10000"><br>
+
+          <label for="arrayType">Array Type</label><br>
+          <select name="arrayType">
+            {{range .ArrayTypes}}
+              <option value="{{.Value}}" {{if .Selected}} selected {{end}}>{{.Text}}</option>
+            {{end}}
+          </select><br>
+
+          <label for="moduleType">Module Type</label><br>
+          <select name="moduleType" selected="1">
+            {{range .ModuleTypes}}
+              <option value="{{.Value}}" {{if .Selected}} selected {{end}}>{{.Text}}</option>
+            {{end}}
+          </select><br>
+
+          <label for="losses">System Losses (-5 to 99 Percent)</label><br>
+          <input type="number" name="losses" value="{{ .Losses }}" min="-5" max="99"><br>
+
+          <button type="submit">Submit</button>
+        </form>
+      </div>
+
+      <div id="right_image">
+        <img id="img_background" src="/static/background.png" hidden>
+        <canvas id="setup-canvas" width="400" height="250">Your browser does not support the HTML5 canvas element.</canvas>
+        <img id="img_pole" src="/static/pole.png" hidden>
+      </div>
+
+    </div>
+
+  {{end}}
+{{end}}

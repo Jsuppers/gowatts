@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <link rel="shortcut icon" type="image/png" href="/static/solar-panel.png"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.2.1/css/ol.css" type="text/css">
+    <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+    <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.2.1/build/ol.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+    <title> {{ .title }} </title>
+  </head>
+  <body>
+    <h2 id="title"> Solar Panel Energy Tool </h2>
+    <img id="gopher" src="/static/golang.png"/>
+
+    {{template "map" . }}
+    {{template "setup" .}}
+    {{template "result" .}}
+    {{template "footer"}}
+
+    <script>
+    window.onload = function () {
+                    var ctx = document
+                        .getElementById('chart-canvas')
+                        .getContext('2d');
+                    window.myLine = new window.Chart(ctx, config);
+                    drawSolarPanel()
+                };
+    </script>
+  </body>
+</html>

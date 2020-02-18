@@ -1,0 +1,81 @@
+body {
+    width:80%;
+    margin: auto;
+    padding-top: 20px;
+    font-family: 'Roboto', sans-serif;
+    color: slategray !important;
+}
+
+input, select {
+    color: slategray !important;
+}
+
+.map {
+    float:left;
+    height: 400px;
+    width: 100%;
+}
+
+#gopher {
+    float: right;
+    height: 50px;
+}
+
+#title {
+    float:left;
+    height: 50px;
+}
+
+#setup {
+    width: 100%;
+    margin-top: 20px;
+    float:left;
+}
+
+#setup-form {
+    margin: 0px auto;
+    width: 80%;
+}
+
+#left_options {
+    width: 50%;
+    float:left;
+
+}
+
+
+
+#right_image {
+    width: 50%;
+    float: right;
+}
+
+#img_background, #setup-canvas, #img_pole {
+    float:right;
+    position: absolute;
+}
+
+#data {
+    width: 100%;
+    margin-top: 20px;
+    float:left;
+}
+
+/* todo position pole*/
+#img_pole {
+    margin-top: 132px;
+    margin-left: 195px;
+}
+
+#footer {
+    width: 100%;
+    float:left;
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+a, a:hover, a:focus, a:active {
+    color: slategray !important; 
+    text-decoration: none !important;
+}
