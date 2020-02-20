@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strconv"
 )
 
 // Output holds the output from the API API call
@@ -38,11 +39,10 @@ type API interface {
 func New() API {
 	apiKey := os.Getenv("PVWATTS_API_KEY")
 	if apiKey == "" {
-		fmt.Println("---------- WARNING!! -----------------")
-		fmt.Println("\n---------- No API Api Key Set --------")
-		fmt.Println("Using DEMO_KEY, this is limited to 50 requests per hour")
-		fmt.Println("To set another key change the PVWATTS_API_KEY environment variable")
-		fmt.Println("------------------------------------------")
+		fmt.Println("-------------- WARNING!! No PVWATTS API Api Key Set --------------------")
+		fmt.Println("--- Using DEMO_KEY, this is limited to 50 requests per hour         ----")
+		fmt.Println("--- Set the PVWATTS_API_KEY environment variable to use another key ----")
+		fmt.Println("------------------------------------------------------------------------")
 		apiKey = "DEMO_KEY"
 	}
 	return &pvWatts{apiKey}
@@ -56,38 +56,67 @@ type pvWatts struct {
 func (p *pvWatts) RetrieveSolarData(parameters data.Parameters) (Output, error) {
 	var output Output
 
+	// Do not continue if no location is set
 	if parameters.Latitude == "" || parameters.Longitude == "" {
 		return output, nil
 	}
 
-	timeframe := "monthly" //hourly
-	dataset := "intl"      // TODO check is within usa
-
-	baseURL := fmt.Sprintf("https://developer.nrel.gov/api/pvwatts/v6.json?api_key=%s&dataset=%s&timeframe=%s&radius=0&", p.apiKey, dataset, timeframe)
-	param := fmt.Sprintf("lat=%s&lon=%s&system_capacity=%s&azimuth=%s&tilt=%s&array_type=%s&module_type=%s&losses=%s", parameters.Latitude, parameters.Longitude, parameters.Capacity, parameters.Azimuth, parameters.Tilt, parameters.ArrayType, parameters.ModuleType, parameters.Losses)
-	request := fmt.Sprintf("%s%s", baseURL, param)
-
-	fmt.Println("Sending Request")
-	fmt.Println(request)
-
+	// Send request to PVWatts API
+	request := p.getPVWattsRequestURI(parameters)
 	resp, err := http.Get(request)
 	if err != nil {
 		return output, err
 	}
 	defer resp.Body.Close()
+
+	// Read the response of PVWatts
 	body, err := ioutil.ReadAll(resp.Body)
-
-	err = json.Unmarshal(body, &output)
-
-	if len(output.Errors) > 0 {
-		return output, fmt.Errorf(output.Errors[0])
-	}
-
-	if resp.StatusCode != http.StatusOK {
+	if err != nil {
 		return output, fmt.Errorf(string(body))
 	}
-	fmt.Println(string(body))
+
+	// Check if the response contains any errors
+	err = json.Unmarshal(body, &output)
+	if resp.StatusCode != http.StatusOK || len(output.Errors) > 0 || err != nil {
+		return output, fmt.Errorf(string(body))
+	}
 
 	return output, nil
+}
 
+func (p *pvWatts) getPVWattsRequestURI(parameters data.Parameters) string {
+	dataset := getDataSet(parameters.Longitude, parameters.Latitude)
+	baseURL := "https://developer.nrel.gov/api/pvwatts/v6.json"
+	settings := fmt.Sprintf("api_key=%s&dataset=%s&timeframe=monthly&radius=0", p.apiKey, dataset)
+	category := fmt.Sprintf("array_type=%s&module_type=%s", parameters.ArrayType, parameters.ModuleType)
+	location := fmt.Sprintf("lat=%s&lon=%s", parameters.Latitude, parameters.Longitude)
+	orientation := fmt.Sprintf("azimuth=%s&tilt=%s", parameters.Azimuth, parameters.Tilt)
+	performance := fmt.Sprintf("system_capacity=%s&losses=%s", parameters.Capacity, parameters.Losses)
+
+	return fmt.Sprintf("%s?%s&%s&%s&%s&%s", baseURL, settings, location, category, orientation, performance)
+}
+
+func getDataSet(longitude, latitude string) string {
+	var lon, lat float64
+	var err error
+	if lon, err = strconv.ParseFloat(longitude, 64); err != nil {
+		return "intl"
+	}
+	if lat, err = strconv.ParseFloat(latitude, 64); err != nil {
+		return "intl"
+	}
+
+	// nsrdb dateset is available for india and usa: https://nsrdb.nrel.gov/map.html
+	// pyhsical model
+	if lat > -20 && lat < 60 && lon > -180 && lon < -20 {
+		fmt.Println("nsrdb")
+		return "nsrdb"
+	}
+
+	// india suny model
+	if lat > 5 && lat < 38 && lon > 65 && lon < 93 {
+		fmt.Println("nsrdb")
+		return "nsrdb"
+	}
+	return "intl"
 }
