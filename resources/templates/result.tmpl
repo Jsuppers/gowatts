@@ -1,18 +1,15 @@
 {{define "result"}}
     <div id="data">
         {{ if (ne .Station.Longitude 0.0 ) }}
-
             <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
             <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.1"></script>
             <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8"></script>
             <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@0.7.4"></script>
 
-           
-
             <div style="width:100%;">
-                <button onclick="resetZoom()">Reset Zoom</button>
-                <button id="drag-switch" onclick="toggleDragMode()">Disable drag mode</button>
                 <canvas id="chart-canvas"></canvas>
+                <button onclick="resetZoom()" class="btn">Reset Zoom</button>
+                <button id="drag-switch" onclick="toggleDragMode()" class="btn">Disable drag mode</button>
             </div>
             <script>
                 var timeFormat = 'MM/DD/YYYY HH:mm';

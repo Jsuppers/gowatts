@@ -214,48 +214,54 @@
         }
       </script>
 
-      <div id="left_options">
-        <form action="/" id="setup-form">
+      <div id="left_image">
+        <img id="img_background" src="/static/background.png" hidden>
+        <canvas id="setup-canvas" width="400" height="250">Your browser does not support the HTML5 canvas element.</canvas>
+        <img id="img_pole" src="/static/pole.png" hidden>
+      </div>
+
+      <form action="/" id="setup-form" class="form-horizontal">
+        <div id="right_options" class="form-group">
           <input type="hidden" name="longitude" value="{{ .Longitude }}"/>
           <input type="hidden" name="latitude" value="{{ .Latitude }}"/>
 
-          <label for="tilt">Tilt (0 - 90 degrees):</label><br>
-          <input type="range" name="tilt" value="{{ .Tilt }}" min="0" max="90" onchange="updateTiltInput(this.value);">
-          <input type="text" id="tiltText" value="{{ .Tilt }}" disabled><br>
+          <div class="columns">
+            <label for="tilt" class="form-label column col-10">Tilt (0 - 90 degrees):</label>
+            <input type="text" class="form-input column col-2" id="tiltText" value="{{ .Tilt }}" disabled>
+            <input type="range" class="slider" name="tilt" value="{{ .Tilt }}" min="0" max="90" onchange="updateTiltInput(this.value);">
+          </div>
 
-          <label for="azimuth">Azimuth (0 - 360 degrees):</label><br>
-          <input type="range" name="azimuth" value="{{ .Azimuth }}" min="0" max="360" onchange="updateAzimuthInput(this.value);">
-          <input type="text" id="azimuthText" value="{{ .Azimuth }}" disabled><br>
+          <div class="columns">
+            <label for="azimuth" class="form-label column col-10">Azimuth (0 - 360 degrees):</label>
+            <input type="text" class="form-input column col-2" id="azimuthText" value="{{ .Azimuth }}" disabled>
+            <input type="range" class="slider" name="azimuth" value="{{ .Azimuth }}" min="0" max="360" onchange="updateAzimuthInput(this.value);">
+          </div>
 
-          <label for="capacity">Capacity (1 - 10000 kW)</label><br>
-          <input type="number" name="capacity" value="{{ .Capacity }}" min="1" max="10000"><br>
+          <label for="capacity" class="form-label">Capacity (1 - 10000 kW)</label><br>
+          <input type="number" class="form-input" name="capacity" value="{{ .Capacity }}" min="1" max="10000"><br>
 
-          <label for="arrayType">Array Type</label><br>
-          <select name="arrayType">
+          <label for="arrayType" class="form-label">Array Type</label><br>
+          <select name="arrayType" class="form-select">
             {{range .ArrayTypes}}
               <option value="{{.Value}}" {{if .Selected}} selected {{end}}>{{.Text}}</option>
             {{end}}
           </select><br>
 
-          <label for="moduleType">Module Type</label><br>
-          <select name="moduleType" selected="1">
+          <label for="moduleType" class="form-label">Module Type</label><br>
+          <select name="moduleType" class="form-select">
             {{range .ModuleTypes}}
               <option value="{{.Value}}" {{if .Selected}} selected {{end}}>{{.Text}}</option>
             {{end}}
           </select><br>
 
-          <label for="losses">System Losses (-5 to 99 Percent)</label><br>
-          <input type="number" name="losses" value="{{ .Losses }}" min="-5" max="99"><br>
+          <label for="losses" class="form-label">System Losses (-5 to 99 Percent)</label><br>
+          <input type="number" class="form-input" name="losses" value="{{ .Losses }}" min="-5" max="99"><br>
 
-          <button type="submit">Submit</button>
-        </form>
-      </div>
-
-      <div id="right_image">
-        <img id="img_background" src="/static/background.png" hidden>
-        <canvas id="setup-canvas" width="400" height="250">Your browser does not support the HTML5 canvas element.</canvas>
-        <img id="img_pole" src="/static/pole.png" hidden>
-      </div>
+          <div class="columns col-12" id="btn-submit">
+            <button type="submit" class="btn btn-primary col-2 col-ml-auto">Submit</button>
+          </div>
+        </div>
+      </form>
 
     </div>
 

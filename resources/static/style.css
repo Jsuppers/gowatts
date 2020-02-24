@@ -38,15 +38,15 @@ input, select {
     width: 80%;
 }
 
-#left_options {
+#right_options {
     width: 50%;
-    float:left;
+    float:right;
 
 }
 
-#right_image {
+#left_image {
     width: 50%;
-    float: right;
+    float: left;
 }
 
 #img_background, #setup-canvas, #img_pole {
@@ -72,6 +72,10 @@ input, select {
     text-align: center;
     margin-top: 40px;
     margin-bottom: 40px;
+}
+
+#btn-submit {
+    padding-top: 20px;
 }
 
 a, a:hover, a:focus, a:active {
