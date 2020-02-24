@@ -4,6 +4,7 @@ body {
     padding-top: 20px;
     font-family: 'Roboto', sans-serif;
     color: slategray !important;
+    min-width: 750px;
 }
 
 input, select {
@@ -42,8 +43,6 @@ input, select {
     float:left;
 
 }
-
-
 
 #right_image {
     width: 50%;

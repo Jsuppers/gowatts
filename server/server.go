@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"gowatts/data"
 	"gowatts/pvwatts"
 	"net/http"
@@ -30,13 +31,16 @@ func (server *httpServer) Start() {
 	router.Static("/static", "resources/static")
 	router.GET("/", server.processRequest)
 
-	router.Run(":8080")
+	err := router.Run(":8080")
+	if err != nil {
+		fmt.Println("Error starting server ", err.Error())
+	}
 }
 
 func (server *httpServer) processRequest(context *gin.Context) {
 	parameters := getParameters(context)
 
-	solarData, err := server.pvwattsAPI.RetrieveSolarData(parameters)
+	solarData, err := server.pvwattsAPI.RetrieveSolarData(&parameters)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),

@@ -32,7 +32,7 @@ type Data struct {
 
 // API interface allows interaction with the API API
 type API interface {
-	RetrieveSolarData(parameters data.Parameters) (Output, error)
+	RetrieveSolarData(parameters *data.Parameters) (Output, error)
 }
 
 // New creates a new pvwatts struct
@@ -53,7 +53,7 @@ type pvWatts struct {
 }
 
 // RetrieveSolarData sends a request to the API API and returns the result
-func (p *pvWatts) RetrieveSolarData(parameters data.Parameters) (Output, error) {
+func (p *pvWatts) RetrieveSolarData(parameters *data.Parameters) (Output, error) {
 	var output Output
 
 	// Do not continue if no location is set
@@ -84,7 +84,7 @@ func (p *pvWatts) RetrieveSolarData(parameters data.Parameters) (Output, error) 
 	return output, nil
 }
 
-func (p *pvWatts) getPVWattsRequestURI(parameters data.Parameters) string {
+func (p *pvWatts) getPVWattsRequestURI(parameters *data.Parameters) string {
 	dataset := getDataSet(parameters.Longitude, parameters.Latitude)
 	baseURL := "https://developer.nrel.gov/api/pvwatts/v6.json"
 	settings := fmt.Sprintf("api_key=%s&dataset=%s&timeframe=monthly&radius=0", p.apiKey, dataset)
@@ -99,24 +99,25 @@ func (p *pvWatts) getPVWattsRequestURI(parameters data.Parameters) string {
 func getDataSet(longitude, latitude string) string {
 	var lon, lat float64
 	var err error
+	intenationalDataset := "intl"
+	nsrdbDataset := "nsrdb" // nsrdb dateset is available for India and America: https://nsrdb.nrel.gov/map.html
 	if lon, err = strconv.ParseFloat(longitude, 64); err != nil {
-		return "intl"
-	}
-	if lat, err = strconv.ParseFloat(latitude, 64); err != nil {
-		return "intl"
+		return intenationalDataset
 	}
 
-	// nsrdb dateset is available for india and usa: https://nsrdb.nrel.gov/map.html
+	if lat, err = strconv.ParseFloat(latitude, 64); err != nil {
+		return intenationalDataset
+	}
+
 	// pyhsical model
 	if lat > -20 && lat < 60 && lon > -180 && lon < -20 {
-		fmt.Println("nsrdb")
-		return "nsrdb"
+		return nsrdbDataset
 	}
 
 	// india suny model
 	if lat > 5 && lat < 38 && lon > 65 && lon < 93 {
-		fmt.Println("nsrdb")
-		return "nsrdb"
+		return nsrdbDataset
 	}
-	return "intl"
+
+	return intenationalDataset
 }
