@@ -1,6 +1,6 @@
 PROJECT_NAME := "gowatts"
 
-.PHONY: build lint
+.PHONY: build lint test
 
 generate: 
 	go generate ./...
@@ -12,3 +12,7 @@ build:
 lint: generate 
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.22.2
 	bin/golangci-lint run
+
+test: generate
+	go test -race ./...
+

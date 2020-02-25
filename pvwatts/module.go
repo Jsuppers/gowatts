@@ -52,6 +52,8 @@ type pvWatts struct {
 	apiKey string
 }
 
+var httpGet = http.Get
+
 // RetrieveSolarData sends a request to the API API and returns the result
 func (p *pvWatts) RetrieveSolarData(parameters *data.Parameters) (Output, error) {
 	var output Output
@@ -63,7 +65,7 @@ func (p *pvWatts) RetrieveSolarData(parameters *data.Parameters) (Output, error)
 
 	// Send request to PVWatts API
 	request := p.getPVWattsRequestURI(parameters)
-	resp, err := http.Get(request)
+	resp, err := httpGet(request)
 	if err != nil {
 		return output, err
 	}
@@ -109,7 +111,7 @@ func getDataSet(longitude, latitude string) string {
 		return intenationalDataset
 	}
 
-	// pyhsical model
+	// physical model
 	if lat > -20 && lat < 60 && lon > -180 && lon < -20 {
 		return nsrdbDataset
 	}
