@@ -53,6 +53,8 @@ type pvWatts struct {
 }
 
 var httpGet = http.Get
+var ioutilReadAll = ioutil.ReadAll
+var jsonUnmarshal = json.Unmarshal
 
 // RetrieveSolarData sends a request to the API API and returns the result
 func (p *pvWatts) RetrieveSolarData(parameters *data.Parameters) (Output, error) {
@@ -72,13 +74,13 @@ func (p *pvWatts) RetrieveSolarData(parameters *data.Parameters) (Output, error)
 	defer resp.Body.Close()
 
 	// Read the response of PVWatts
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := ioutilReadAll(resp.Body)
 	if err != nil {
 		return output, fmt.Errorf(string(body))
 	}
 
 	// Check if the response contains any errors
-	err = json.Unmarshal(body, &output)
+	err = jsonUnmarshal(body, &output)
 	if resp.StatusCode != http.StatusOK || len(output.Errors) > 0 || err != nil {
 		return output, fmt.Errorf(string(body))
 	}

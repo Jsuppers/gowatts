@@ -2,11 +2,15 @@ PROJECT_NAME := "gowatts"
 
 .PHONY: build lint test
 
+all: dependencies
+
+dependencies:
+	@go get -v -d ./...
+
 generate: 
 	go generate ./...
 
 build:
-	go get -v -d ./...
 	CGO_ENABLED=0 go build -o ./bin/${PROJECT_NAME} .
 
 lint: generate 
