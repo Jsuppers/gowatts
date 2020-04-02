@@ -7,7 +7,7 @@ all: dependencies
 dependencies:
 	@go get -v -d ./...
 
-generate: 
+generate: dependencies
 	go generate ./...
 
 build:
