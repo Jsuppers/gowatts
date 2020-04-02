@@ -22,8 +22,11 @@ test: generate
 	go test -race ./...
 
 coverage: generate
+	go get golang.org/x/tools/cmd/cover
+	go get github.com/mattn/goveralls
 	go test -coverprofile=cover.out ./...
 	go tool cover -func=cover.out
+	goveralls -coverprofile=cover.out -service=travis-ci -repotoken ${COVERALLS_TOKEN}
 	rm cover.out
 
 coverhtml: generate
