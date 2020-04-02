@@ -3,4 +3,6 @@ language: go
 go:
   - 1.12
 script:
+  - echo $HOME
+  - export GOPATH="/home/travis"
   - make coverage

@@ -8,7 +8,7 @@ dependencies:
 	export GO111MODULE="on"
 	@go get -v -d ./...
 
-generate: dependencies
+generate: 
 	go generate ./...
 
 build:
