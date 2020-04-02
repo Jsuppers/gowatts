@@ -136,6 +136,24 @@ func Test_pvWatts_RetrieveSolarData(t *testing.T) {
 				mockBody.EXPECT().Close().Times(1)
 			}, Output{}, true,
 		},
+		{
+			"error marshalling request",
+			&data.Parameters{Latitude: testLatitude, Longitude: testLongitude},
+			httpGetArgs{http.StatusOK, nil},
+			ioutilReadAllArgs{"{", nil},
+			func(mockBody *mocks.MockReadCloser) {
+				mockBody.EXPECT().Close().Times(1)
+			}, Output{}, true,
+		},
+		{
+			"success",
+			&data.Parameters{Latitude: testLatitude, Longitude: testLongitude},
+			httpGetArgs{http.StatusOK, nil},
+			ioutilReadAllArgs{BodyString: "{\"station_info\":{\"lat\":10,\"lon\":20}}", RespError: nil},
+			func(mockBody *mocks.MockReadCloser) {
+				mockBody.EXPECT().Close().Times(1)
+			}, Output{Station: Station{Latitude: 10.0, Longitude: 20.0}}, false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
