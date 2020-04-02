@@ -54,9 +54,10 @@ func Test_getDataSet(t *testing.T) {
 		{"uses intl at Auckland", args{"174.763336", "-36.848461"}, "intl"},
 	}
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := getDataSet(tt.args.longitude, tt.args.latitude); got != tt.want {
-				t.Errorf("getDataSet() = %v, want %v", got, tt.want)
+		test := tt
+		t.Run(test.name, func(t *testing.T) {
+			if got := getDataSet(test.args.longitude, test.args.latitude); got != test.want {
+				t.Errorf("getDataSet() = %v, want %v", got, test.want)
 			}
 		})
 	}
@@ -96,8 +97,8 @@ func Test_pvWatts_getPVWattsRequestURI(t *testing.T) {
 }
 
 func Test_pvWatts_RetrieveSolarData(t *testing.T) {
-	testLatitude := "30"
-	testLongitude := "30"
+	testLatitude := "10"
+	testLongitude := "20"
 
 	type ioutilReadAllArgs struct {
 		BodyString string
@@ -137,7 +138,7 @@ func Test_pvWatts_RetrieveSolarData(t *testing.T) {
 			}, Output{}, true,
 		},
 		{
-			"error marshalling request",
+			"error marshaling request",
 			&data.Parameters{Latitude: testLatitude, Longitude: testLongitude},
 			httpGetArgs{http.StatusOK, nil},
 			ioutilReadAllArgs{"{", nil},
@@ -156,8 +157,8 @@ func Test_pvWatts_RetrieveSolarData(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			test := tt
+		test := tt
+		t.Run(test.name, func(t *testing.T) {
 			mockCtrl := gomock.NewController(t)
 			mockBody := mocks.NewMockReadCloser(mockCtrl)
 			test.setup(mockBody)
@@ -175,7 +176,7 @@ func Test_pvWatts_RetrieveSolarData(t *testing.T) {
 			}()
 
 			got, err := testModule.RetrieveSolarData(test.parameters)
-			if (err != nil) != tt.wantErr {
+			if (err != nil) != test.wantErr {
 				t.Errorf("pvWatts.RetrieveSolarData() error = %v, wantErr %v", err, test.wantErr)
 				return
 			}

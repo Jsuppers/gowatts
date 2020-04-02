@@ -15,7 +15,7 @@ var staticResPath = fmt.Sprintf("%s/static", resourcesPath)
 
 // Server begins a server
 type Server interface {
-	Start()
+	Start() error
 }
 
 // New creates a new http server
@@ -29,9 +29,9 @@ type httpServer struct {
 }
 
 // Start starts the server
-func (server *httpServer) Start() {
+func (server *httpServer) Start() error {
 	router := server.setupRouter()
-	router.Run(":8080")
+	return router.Run(":8080")
 }
 
 func (server *httpServer) setupRouter() *gin.Engine {

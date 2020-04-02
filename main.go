@@ -1,8 +1,11 @@
 package main
 
-import "gowatts/server"
+import (
+	"fmt"
+	"gowatts/server"
+)
 
 func main() {
 	site := server.New()
-	site.Start()
+	fmt.Println(site.Start())
 }
