@@ -20,7 +20,7 @@ lint: generate
 test: generate
 	go test -race ./...
 
-coverage: 
+coverage: generate
 	go test -coverprofile=cover.out ./...
 	go tool cover -func=cover.out
 	rm cover.out
