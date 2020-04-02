@@ -1,2 +1,4 @@
 bin
 mocks
+coverage.out
+coverage.html

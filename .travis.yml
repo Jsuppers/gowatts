@@ -1,0 +1,6 @@
+# .travis.yml
+language: go
+go:
+  - 1.12
+script:
+  - make coverage
