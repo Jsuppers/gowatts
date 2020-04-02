@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.com/Jsuppers/gowatts.svg?branch=master)](https://travis-ci.com/Jsuppers/gowatts)
-[![Coverage Status](https://coveralls.io/repos/github/Jsuppers/gowatts/badge.svg?branch=master)](https://coveralls.io/github/Jsuppers/gowatts?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/Jsuppers/gowatts/badge.svg?branch=master&service=github)](https://coveralls.io/github/Jsuppers/gowatts?branch=master)
 
 # gowatts
 Gowatts is a simple Go program which estimates power output of a solar panel system depending on it's location and orientation.
