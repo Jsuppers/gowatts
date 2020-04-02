@@ -1,12 +1,17 @@
 package server
 
 import (
+	"fmt"
 	"gowatts/data"
 	"gowatts/pvwatts"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
+
+var resourcesPath = "resources"
+var templatesPath = fmt.Sprintf("%s/templates/*", resourcesPath)
+var staticResPath = fmt.Sprintf("%s/static", resourcesPath)
 
 // Server begins a server
 type Server interface {
@@ -31,8 +36,8 @@ func (server *httpServer) Start() {
 
 func (server *httpServer) setupRouter() *gin.Engine {
 	router := gin.Default()
-	router.LoadHTMLGlob("resources/templates/*")
-	router.Static("/static", "resources/static")
+	router.LoadHTMLGlob(templatesPath)
+	router.Static("/static", staticResPath)
 	router.GET("/", server.processRequest)
 	return router
 }
