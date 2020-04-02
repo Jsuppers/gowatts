@@ -3,6 +3,6 @@ language: go
 go:
   - 1.12
 script:
-  - echo $HOME
-  - export GOPATH="/home/travis"
+  - export GOPATH=$HOME
+  - go get github.com/golang/mock/mockgen
   - make coverage
