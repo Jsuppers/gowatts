@@ -26,7 +26,6 @@ func createOptions(stringIndex string, options ...string) []Option {
 	return output
 }
 
-// TODO correct values, maybe average for month
 func createLabels(length int) []int {
 	labels := make([]int, length)
 	for i := 0; i < len(labels); i++ {

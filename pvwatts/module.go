@@ -41,7 +41,8 @@ func New() API {
 	if apiKey == "" {
 		fmt.Println("-------------- WARNING!! No PVWATTS API Api Key Set --------------------")
 		fmt.Println("--- Using DEMO_KEY, this is limited to 50 requests per hour         ----")
-		fmt.Println("--- Set the PVWATTS_API_KEY environment variable to use another key ----")
+		fmt.Println("--- Please go to https://developer.nrel.gov/ to request another key ----")
+		fmt.Println("--- Then set PVWATTS_API_KEY environment variable to this key        ---")
 		fmt.Println("------------------------------------------------------------------------")
 		apiKey = "DEMO_KEY"
 	}
@@ -104,7 +105,8 @@ func getDataSet(longitude, latitude string) string {
 	var lon, lat float64
 	var err error
 	intenationalDataset := "intl"
-	nsrdbDataset := "nsrdb" // nsrdb dateset is available for India and America: https://nsrdb.nrel.gov/map.html
+	// nsrdb dataset is available for India and America: https://nsrdb.nrel.gov/map.html
+	nsrdbDataset := "nsrdb"
 	if lon, err = strconv.ParseFloat(longitude, 64); err != nil {
 		return intenationalDataset
 	}

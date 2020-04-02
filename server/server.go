@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"gowatts/data"
 	"gowatts/pvwatts"
 	"net/http"
@@ -26,15 +25,16 @@ type httpServer struct {
 
 // Start starts the server
 func (server *httpServer) Start() {
+	router := server.setupRouter()
+	router.Run(":8080")
+}
+
+func (server *httpServer) setupRouter() *gin.Engine {
 	router := gin.Default()
 	router.LoadHTMLGlob("resources/templates/*")
 	router.Static("/static", "resources/static")
 	router.GET("/", server.processRequest)
-
-	err := router.Run(":8080")
-	if err != nil {
-		fmt.Println("Error starting server ", err.Error())
-	}
+	return router
 }
 
 func (server *httpServer) processRequest(context *gin.Context) {
